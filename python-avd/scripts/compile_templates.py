@@ -9,7 +9,7 @@ from sys import argv, path
 # Override global path to load pyavd from pwd instead of any installed version.
 path.insert(0, str(Path(__file__).parent.parent))
 
-from pyavd._utils.compile_templates import compile_eos_cli_config_gen_templates, compile_eos_designs_templates
+from pyavd.templater import compile_eos_cli_config_gen_templates, compile_eos_designs_templates
 
 
 def main(log_level: int = logging.INFO) -> None:
