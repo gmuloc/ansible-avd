@@ -10,15 +10,7 @@ from typing import TYPE_CHECKING
 
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, ModuleLoader, StrictUndefined
 
-from ._utils.hash_dir import check_hash
-from .constants import (
-    EOS_CLI_CONFIG_GEN_JINJA2_PRECOMPILED_TEMPLATE_PATH,
-    EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH,
-    EOS_DESIGNS_JINJA2_PRECOMPILED_TEMPLATE_PATH,
-    EOS_DESIGNS_JINJA2_TEMPLATE_PATH,
-    JINJA2_EXTENSIONS,
-    RUNNING_FROM_SRC,
-)
+from .constants import JINJA2_EXTENSIONS, RUNNING_FROM_SRC
 
 if TYPE_CHECKING:
     import os
@@ -162,58 +154,3 @@ class ExtensionFileSystemLoader(FileSystemLoader):
         """Filter found files from FileSystemLoader using extensions."""
         found = super().list_templates()
         return [file for file in found if Path(file).suffix in self.extensions]
-
-
-def compile_eos_cli_config_gen_templates() -> None:
-    """TODO."""
-    templar = Templar(precompiled_templates_path=EOS_CLI_CONFIG_GEN_JINJA2_PRECOMPILED_TEMPLATE_PATH, searchpaths=[EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH])
-    templar.compile_templates_in_paths(
-        precompiled_templates_path=EOS_CLI_CONFIG_GEN_JINJA2_PRECOMPILED_TEMPLATE_PATH, searchpaths=[EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH]
-    )
-
-
-def compile_eos_designs_templates() -> None:
-    """TODO."""
-    templar = Templar(precompiled_templates_path=EOS_DESIGNS_JINJA2_PRECOMPILED_TEMPLATE_PATH, searchpaths=[EOS_DESIGNS_JINJA2_TEMPLATE_PATH])
-    templar.compile_templates_in_paths(precompiled_templates_path=EOS_DESIGNS_JINJA2_PRECOMPILED_TEMPLATE_PATH, searchpaths=[EOS_DESIGNS_JINJA2_TEMPLATE_PATH])
-
-
-def check_eos_designs_templates() -> None:
-    """TODO.
-
-    Templates
-    """
-    if not RUNNING_FROM_SRC:
-        return
-
-    LOGGER.info("pyavd running from source detected, checking eos_designs templates for any changes...")
-    dir_path = EOS_DESIGNS_JINJA2_TEMPLATE_PATH
-
-    changed, new_hash = check_hash(dir_path)
-    if changed:
-        LOGGER.info("Recompiling eos_designs templates...")
-        compile_eos_designs_templates()
-        with (dir_path / ".hash").open("w") as fd:
-            fd.write(new_hash)
-
-
-def check_eos_cli_config_gen_templates() -> None:
-    """TODO.
-
-    Templates
-    """
-    if not RUNNING_FROM_SRC:
-        return
-
-    LOGGER.info("pyavd running from source detected, checking eos_cli_config_gen templates for any changes...")
-    dir_path = EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH
-
-    changed, new_hash = check_hash(dir_path)
-    if changed:
-        LOGGER.info("Recompiling eos_cli_config_gen templates...")
-        compile_eos_cli_config_gen_templates()
-        with (dir_path / ".hash").open("w") as fd:
-            fd.write(new_hash)
-
-
-check_eos_cli_config_gen_templates()

@@ -16,6 +16,8 @@ from ansible.module_utils.compat.importlib import import_module
 from ansible.plugins.action import ActionBase, display
 from ansible.utils.collection_loader._collection_finder import _get_collection_metadata
 
+from ansible_collections.arista.avd.plugins import RUNNING_FROM_SOURCE_PATH
+
 try:
     # Relying on packaging installed by ansible
     from packaging.requirements import InvalidRequirement, Requirement
@@ -324,6 +326,18 @@ def _get_running_collection_version(running_collection_name: str, result: dict) 
     }
 
 
+def check_running_from_source() -> None:
+    """Check if running from sources, if so recompile schemas and templates as needed."""
+    if not RUNNING_FROM_SOURCE_PATH.exists():
+        return
+    # if running from source, path to pyavd and schema_tools has already been prepended to Python Path
+    from pyavd._schema.check_schemas import check_schemas
+    from pyavd._utils.compile_templates import check_templates
+
+    check_schemas()
+    check_templates()
+
+
 class ActionModule(ActionBase):
     def run(self, tmp: Any = None, task_vars: dict | None = None) -> dict:
         if task_vars is None:
@@ -365,6 +379,9 @@ class ActionModule(ActionBase):
         display.display(f"AVD version {info['ansible']['collection']['version']}", color=C.COLOR_OK)
         if display.verbosity < 1:
             display.display("Use -v for details.")
+
+        # check if running from source
+        check_running_from_source()
 
         if not _validate_python_version(info["python"], result):
             result["failed"] = True
