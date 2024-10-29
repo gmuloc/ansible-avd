@@ -15,6 +15,7 @@ init_pyavd_logging()
 if RUNNING_FROM_SOURCE_PATH.exists():
     import sys
 
+    # TODO: @gmuloc - once proper logging has been implemented for the collection, replace this with a log statement.
     from ansible.utils.display import Display
 
     display = Display()

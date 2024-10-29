@@ -3,13 +3,13 @@
 # that can be found in the LICENSE file.
 import logging
 
-from pyavd._utils.hash_dir import check_hash
 from pyavd.constants import RUNNING_FROM_SRC
+from schema_tools.build_schemas import build_schemas
+from schema_tools.hash_dir import check_hash
 
 from .constants import (
-    EOS_CLI_CONFIG_GEN_SCHEMA_DIR,
-    # METASCHEMA_DIR,
-    EOS_DESIGNS_SCHEMA_DIR,
+    EOS_CLI_CONFIG_GEN_FRAGMENTS_PATH,
+    EOS_DESIGNS_FRAGMENTS_PATH,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -25,16 +25,13 @@ def check_schemas() -> None:
 
     LOGGER.info("pyavd running from source detected, checking schemas for any changes...")
 
-    # TODO: ok to import from here
-    from schema_tools.build_schemas import build_schemas
-
     # eos_designs
-    eos_designs_changed, eos_designs_new_hash = check_hash(EOS_DESIGNS_SCHEMA_DIR / "schema_fragments")
-    eos_cli_config_gen_changed, eos_cli_config_gen_new_hash = check_hash(EOS_CLI_CONFIG_GEN_SCHEMA_DIR / "schema_fragments")
+    eos_designs_changed, eos_designs_new_hash = check_hash(EOS_DESIGNS_FRAGMENTS_PATH)
+    eos_cli_config_gen_changed, eos_cli_config_gen_new_hash = check_hash(EOS_CLI_CONFIG_GEN_FRAGMENTS_PATH)
     if eos_designs_changed or eos_cli_config_gen_changed:
         LOGGER.info("Recompiling schemas...")
         build_schemas()
-        with (EOS_DESIGNS_SCHEMA_DIR / "schema_fragments/.hash").open("w") as fd:
+        with (EOS_DESIGNS_FRAGMENTS_PATH / ".hash").open("w") as fd:
             fd.write(eos_designs_new_hash)
-        with (EOS_CLI_CONFIG_GEN_SCHEMA_DIR / "schema_fragments/.hash").open("w") as fd:
+        with (EOS_CLI_CONFIG_GEN_FRAGMENTS_PATH / ".hash").open("w") as fd:
             fd.write(eos_cli_config_gen_new_hash)

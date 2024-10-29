@@ -331,8 +331,8 @@ def check_running_from_source() -> None:
     if not RUNNING_FROM_SOURCE_PATH.exists():
         return
     # if running from source, path to pyavd and schema_tools has already been prepended to Python Path
-    from pyavd._schema.check_schemas import check_schemas
-    from pyavd._utils.compile_templates import check_templates
+    from schema_tools.check_schemas import check_schemas
+    from schema_tools.compile_templates import check_templates
 
     check_schemas()
     check_templates()

@@ -88,10 +88,9 @@ The modification of the Python Path is logged as a warning in the Ansible output
 
 TODO: Add picture.
 
-When running from source, pyavd is able to check if any schema fragment or
-templates has changed locally and to recompile on the fly either or both as
-required for `eos_cli_config_gen` and `eos_designs`, allowing a seamless
-development workflow.
+When running from source, the `verify_requirements` action will check if any schema fragment or templates has changed locally and if so, will recompile on the fly either or both as
+required for `eos_cli_config_gen` and `eos_designs`, allowing a seamless development workflow while using Ansible.
+When using pyavd, it is required to run pre-commit to achieve the same.
 
 ## Pre-commit
 
