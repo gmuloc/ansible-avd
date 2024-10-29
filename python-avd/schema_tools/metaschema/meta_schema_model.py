@@ -496,6 +496,8 @@ class AvdSchemaDict(AvdSchemaBaseModel):
     """
     allow_other_keys: bool | None = False
     """Allow keys in the dictionary which are not defined in the schema."""
+    allow_comment: bool | None = False
+    """"Allow 'comment' key in the dictionary not defined in the schema."""
     documentation_options: DocumentationOptions | None = None
     """Schema field options used for controlling documentation generation"""
     field_schema: str | None = Field(None, alias="$schema")

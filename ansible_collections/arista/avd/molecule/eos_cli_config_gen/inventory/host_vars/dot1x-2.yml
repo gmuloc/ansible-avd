@@ -16,3 +16,6 @@ dot1x:
         traffic_allow: true
       phone_action:
         apply_cached_results: true
+  comment: |-
+    BLAH
+    BLOH

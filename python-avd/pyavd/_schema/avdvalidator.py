@@ -121,9 +121,11 @@ class AvdValidator:
         # Validation of "allow_other_keys"
         if not schema.get("allow_other_keys", False):
             # Check that instance only contains the schema keys
-            invalid_keys = ", ".join([key for key in instance if key not in all_keys and key[0] != "_"])
+            invalid_keys = [key for key in instance if key not in all_keys and key[0] != "_"]
+            if schema.get("allow_comment", False) and "comment" in invalid_keys:
+                invalid_keys.remove("comment")
             if invalid_keys:
-                yield AvdValidationError(f"Unexpected key(s) '{invalid_keys}' found in dict.", path=path)
+                yield AvdValidationError(f"Unexpected key(s) '{', '.join(invalid_keys)}' found in dict.", path=path)
 
         # Run over child keys and check for required and update child schema with dynamic valid values before
         # descending into validation of child schema.

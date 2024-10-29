@@ -9,6 +9,11 @@
          dot1x.aaa.unresponsive is arista.avd.defined or dot1x.captive_portal is arista.avd.defined
          or dot1x.supplicant is arista.avd.defined  or dot1x.radius_av_pair_username_format is arista.avd.defined %}
 dot1x
+{%         if dot1x.comment is arista.avd.defined %}
+{%             for line in dot1x.comment.split('\n') %}
+   !! {{ line }}
+{%             endfor %}
+{%         endif %}
 {%         for profile in dot1x.supplicant.profiles | arista.avd.natural_sort("name") %}
    supplicant profile {{ profile.name }}
 {%             if profile.identity is arista.avd.defined %}

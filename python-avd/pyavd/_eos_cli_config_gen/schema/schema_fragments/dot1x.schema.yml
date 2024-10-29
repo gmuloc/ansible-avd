@@ -9,6 +9,7 @@ keys:
   dot1x:
     type: dict
     display_name: Global 802.1x Authentication
+    allow_comment: true
     keys:
       system_auth_control:
         type: bool

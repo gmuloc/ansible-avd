@@ -328,6 +328,11 @@
                             "default": false,
                             "description": "Allow keys in the dictionary which are not defined in the schema."
                         },
+                        "allow_comment": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Allow 'comment' key in the dictionary not defined in the schema."
+                        },
                         "display_name": {
                             "$ref": "#/$defs/display_name"
                         },
