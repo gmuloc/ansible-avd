@@ -44,6 +44,8 @@ ansible-collection = [
     "treelib>=1.5.5",
     # jsonschema is required for the arista.cvp Ansible collection
     "jsonschema>=3.2.0",
+    # TODO: now required when running verify requirements
+    "jsonschema-rs",
 ]
 
 [build-system]
