@@ -82,11 +82,9 @@ pip3 install -r ansible_collections/arista/avd/requirements-dev.txt -r ansible_c
 
 ## Running from source
 
-AVD is able to detect when it is running from source from within Ansible. When
-it is the case, it will automatically prepend to the Python Path the directory
-where the local pyavd sources are located in order to leverage this.
+Ansible-AVD is able to detect when it is running from source, and will prepend the Python Path with the path to the PyAVD source. This ensures that running Ansible-AVD from source will also use PyAVD from the same source.
 
-It is indicated in a bright yellow log in the Ansible output.
+The modification of the Python Path is logged as a warning in the Ansible output.
 
 TODO: Add picture.
 
