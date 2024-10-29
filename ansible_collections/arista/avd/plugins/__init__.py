@@ -5,12 +5,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .plugin_utils.utils.init_logging import init_pyavd_logging
-
 PYTHON_AVD_PATH = Path(__file__).parents[4] / "python-avd"
 RUNNING_FROM_SOURCE_PATH = PYTHON_AVD_PATH / "pyavd/running_from_src.txt"
 
-init_pyavd_logging()
+try:
+    from .plugin_utils.utils.init_logging import init_pyavd_logging
+
+    HAS_INIT_PYAVD_LOGGING = True
+except ImportError:
+    HAS_INIT_PYAVD_LOGGING = False
+
+if HAS_INIT_PYAVD_LOGGING:
+    init_pyavd_logging()
 
 if RUNNING_FROM_SOURCE_PATH.exists():
     import sys
