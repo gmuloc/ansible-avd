@@ -3070,6 +3070,7 @@ keys:
                 default: both
         dot1x:
           type: dict
+          description: 802.1x
           keys:
             port_control:
               type: str
@@ -13130,7 +13131,8 @@ keys:
                 - path-selection
                 description: Transport encapsulation for neighbor.
               next_hop_self_source_interface:
-                description: Source interface name.
+                description: Source interface name for MPLS encapsulation. Requires
+                  `encapsulation` to be set as `mpls`.
                 type: str
               next_hop_self_received_evpn_routes:
                 type: dict
@@ -13171,6 +13173,12 @@ keys:
                   type: str
                 activate:
                   type: bool
+                route_map_in:
+                  type: str
+                  description: Inbound route-map name.
+                route_map_out:
+                  type: str
+                  description: Outbound route-map name.
                 rcf_in:
                   type: str
                   description: 'Inbound RCF function name with parenthesis.
@@ -13203,6 +13211,10 @@ keys:
                   - mpls
                   - path-selection
                   description: Transport encapsulation for the neighbor.
+                next_hop_self_source_interface:
+                  type: str
+                  description: Source interface name for MPLS encapsulation. Requires
+                    `encapsulation` to be set as `mpls`.
           peer_groups:
             type: list
             primary_key: name
@@ -15697,6 +15709,22 @@ keys:
                     description: IPv4 prefix "A.B.C.D/E" or IPv6 prefix "A:B:C:D:E:F:G:H/I".
                   route_map:
                     type: str
+            maximum_paths:
+              type: dict
+              keys:
+                paths:
+                  type: int
+                  required: true
+                  convert_types:
+                  - str
+                  min: 1
+                  max: 600
+                ecmp:
+                  type: int
+                  convert_types:
+                  - str
+                  min: 1
+                  max: 600
             updates:
               type: dict
               keys:
@@ -21531,6 +21559,8 @@ keys:
           description: Type 7 Password Hash.
         autovlan_disable:
           type: bool
+        vrf:
+          type: str
         source_interface:
           type: str
   vrfs:
