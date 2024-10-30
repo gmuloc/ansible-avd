@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 from __future__ import annotations
 
+from contextlib import suppress
 from pathlib import Path
 
 PYTHON_AVD_PATH = Path(__file__).parents[4] / "python-avd"
@@ -13,10 +14,12 @@ if RUNNING_FROM_SOURCE:
     import sys
 
     # TODO: @gmuloc - once proper logging has been implemented for the collection, replace this with a log statement.
-    from ansible.utils.display import Display
+    # Note that we can't output anything to stdout or stderr in normal mode or it breaks ansible-sanity
+    with suppress(ImportError):
+        from ansible.utils.display import Display
 
-    display = Display()
+        display = Display()
 
-    display.v(f"AVD detected it is running from source, prepending the path to the source of pyavd '{PYTHON_AVD_PATH}' to PATH to use it.")
+        display.v(f"AVD detected it is running from source, prepending the path to the source of pyavd '{PYTHON_AVD_PATH}' to PATH to use it.")
 
     sys.path = [str(PYTHON_AVD_PATH), *sys.path]

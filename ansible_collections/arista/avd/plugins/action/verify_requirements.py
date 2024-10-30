@@ -95,6 +95,7 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
     return False if any python requirement is not valid
     """
     valid = True
+    pyavd_from_source = False
 
     requirements_dict = {
         "not_found": {},
@@ -112,6 +113,10 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
             msg = f"Wrong format for requirement {raw_req}"
             raise AnsibleActionFail(msg) from exc
 
+        if RUNNING_FROM_SOURCE and req.name == "pyavd":
+            pyavd_from_source = True
+            display.vvv("AVD is running from source, checking pyavd version.", "Verify Requirements")
+
         try:
             installed_version = version(req.name)
             display.vvv(f"Found {req.name} {installed_version} installed!", "Verify Requirements")
@@ -122,7 +127,10 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
             detected_versions = [dist.version for dist in potential_dists]
             valid_versions = [version for version in detected_versions if req.specifier.contains(version)]
             if len(detected_versions) > 1:
-                display.v(f"Found {req.name} {detected_versions} metadata - this could mean legacy dist-info files are present in your site-packages folder")
+                display.v(
+                    f"Found {req.name} {detected_versions} metadata - this could mean legacy dist-info files are present in your site-packages folder"
+                    f"{' or that you are running pyavd from source.' if pyavd_from_source else ''}"
+                )
         except PackageNotFoundError:
             requirements_dict["not_found"][req.name] = {
                 "installed": None,
@@ -134,13 +142,13 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
 
         if req.specifier.contains(installed_version):
             requirements_dict["valid"][req.name] = {
-                "installed": installed_version,
+                "installed": f"{installed_version}{' (running from source)' if pyavd_from_source else ''}",
                 "required_version": str(req.specifier) if len(req.specifier) > 0 else None,
             }
         elif len(valid_versions) > 0:
             # More than one dist found and at least one was matching - output a warning
             requirements_dict["valid"][req.name] = {
-                "installed": installed_version,
+                "installed": f"{installed_version}{' (running from source)' if pyavd_from_source else ''}",
                 "detected_versions": detected_versions,
                 "valid_versions": valid_versions,
                 "required_version": str(req.specifier) if len(req.specifier) > 0 else None,
@@ -162,18 +170,20 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
                 wrap_text=False,
             )
             requirements_dict["mismatched"][req.name] = {
-                "installed": installed_version,
+                "installed": f"{installed_version}{' (running from source)' if pyavd_from_source else ''}",
                 "detected_versions": detected_versions,
                 "valid_versions": None,
                 "required_version": str(req.specifier) if len(req.specifier) > 0 else None,
             }
+            display.error(f"Python library '{req.name}' version running {installed_version} - requirement is {req!s}", wrap_text=False)
         else:
             display.error(f"Python library '{req.name}' version running {installed_version} - requirement is {req!s}", wrap_text=False)
             requirements_dict["mismatched"][req.name] = {
-                "installed": installed_version,
+                "installed": f"{installed_version}{' (running from source)' if pyavd_from_source else ''}",
                 "required_version": str(req.specifier) if len(req.specifier) > 0 else None,
             }
             valid = False
+        pyavd_from_source = False
 
     info["python_requirements"] = requirements_dict
     return valid
