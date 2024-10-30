@@ -16,7 +16,7 @@ from ansible.module_utils.compat.importlib import import_module
 from ansible.plugins.action import ActionBase, display
 from ansible.utils.collection_loader._collection_finder import _get_collection_metadata
 
-from ansible_collections.arista.avd.plugins import RUNNING_FROM_SOURCE_PATH
+from ansible_collections.arista.avd.plugins import PYTHON_AVD_PATH, RUNNING_FROM_SOURCE
 
 try:
     # Relying on packaging installed by ansible
@@ -26,6 +26,16 @@ try:
     HAS_PACKAGING = True
 except ImportError:
     HAS_PACKAGING = False
+
+try:
+    from ansible_collections.arista.avd.plugins.plugin_utils.utils.init_logging import init_pyavd_logging
+
+    HAS_INIT_PYAVD_LOGGING = True
+except ImportError:
+    HAS_INIT_PYAVD_LOGGING = False
+
+if HAS_INIT_PYAVD_LOGGING:
+    init_pyavd_logging()
 
 MIN_PYTHON_SUPPORTED_VERSION = (3, 10)
 DEPRECATE_MIN_PYTHON_SUPPORTED_VERSION = False
@@ -328,7 +338,7 @@ def _get_running_collection_version(running_collection_name: str, result: dict) 
 
 def check_running_from_source() -> None:
     """Check if running from sources, if so recompile schemas and templates as needed."""
-    if not RUNNING_FROM_SOURCE_PATH.exists():
+    if not RUNNING_FROM_SOURCE:
         return
     # if running from source, path to pyavd and schema_tools has already been prepended to Python Path
     from schema_tools.check_schemas import check_schemas
@@ -376,12 +386,14 @@ class ActionModule(ActionBase):
 
         _get_running_collection_version(running_collection_name, info["ansible"])
 
-        display.display(f"AVD version {info['ansible']['collection']['version']}", color=C.COLOR_OK)
-        if display.verbosity < 1:
-            display.display("Use -v for details.")
-
         # check if running from source
         check_running_from_source()
+
+        display.display(f"AVD version {info['ansible']['collection']['version']}", color=C.COLOR_OK)
+        if RUNNING_FROM_SOURCE:
+            display.display(f"AVD is running from source using PyAVD at '{PYTHON_AVD_PATH}'", color=C.COLOR_OK)
+        if display.verbosity < 1:
+            display.display("Use -v for details.")
 
         if not _validate_python_version(info["python"], result):
             result["failed"] = True

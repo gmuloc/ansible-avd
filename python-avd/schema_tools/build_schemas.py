@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 from textwrap import indent
 
-import jsonschema_rs
 from deepmerge import always_merger
 from yaml import CSafeDumper, CSafeLoader
 from yaml import dump as yaml_dump
@@ -15,6 +14,13 @@ from .constants import DOCS_PATHS, LICENSE_HEADER, SCHEMA_FRAGMENTS_PATHS, SCHEM
 from .generate_docs.mdtabsgen import get_md_tabs
 from .metaschema.meta_schema_model import AristaAvdSchema
 from .store import create_store
+
+try:
+    import jsonschema_rs
+
+    HAS_JSONSCHEMA_RS = True
+except ImportError:
+    HAS_JSONSCHEMA_RS = False
 
 FRAGMENTS_PATTERN = "*.yml"
 
@@ -46,6 +52,12 @@ def combine_schemas() -> None:
 
 def validate_schemas(schema_store: dict) -> None:
     """Validate schemas according to metaschema."""
+    if not HAS_JSONSCHEMA_RS:
+        LOGGER.warning(
+            "'jsonschema_rs' was not found. If you are a developer using AVD make sure to install the dev requirements for the collection. "
+            "The schemas could not be validated."
+        )
+        return
     schema_validator = jsonschema_rs.Draft7Validator(schema_store["avd_meta_schema"])
     for schema_name in SCHEMA_FRAGMENTS_PATHS:
         LOGGER.info("Validating schema '%s'", schema_name)

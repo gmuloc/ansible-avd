@@ -7,18 +7,9 @@ from pathlib import Path
 
 PYTHON_AVD_PATH = Path(__file__).parents[4] / "python-avd"
 RUNNING_FROM_SOURCE_PATH = PYTHON_AVD_PATH / "pyavd/running_from_src.txt"
+RUNNING_FROM_SOURCE = RUNNING_FROM_SOURCE_PATH.exists()
 
-try:
-    from .plugin_utils.utils.init_logging import init_pyavd_logging
-
-    HAS_INIT_PYAVD_LOGGING = True
-except ImportError:
-    HAS_INIT_PYAVD_LOGGING = False
-
-if HAS_INIT_PYAVD_LOGGING:
-    init_pyavd_logging()
-
-if RUNNING_FROM_SOURCE_PATH.exists():
+if RUNNING_FROM_SOURCE:
     import sys
 
     # TODO: @gmuloc - once proper logging has been implemented for the collection, replace this with a log statement.
@@ -26,6 +17,6 @@ if RUNNING_FROM_SOURCE_PATH.exists():
 
     display = Display()
 
-    display.warning(f"AVD detected it is running from source, prepending the path to the source of pyavd '{PYTHON_AVD_PATH}' to PATH to use it.")
+    display.v(f"AVD detected it is running from source, prepending the path to the source of pyavd '{PYTHON_AVD_PATH}' to PATH to use it.")
 
     sys.path = [str(PYTHON_AVD_PATH), *sys.path]
