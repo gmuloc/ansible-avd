@@ -4,4 +4,4 @@
 # The -r path is relative to this file.
 -r ../ansible_collections/arista/avd/requirements.txt
 # Needed for molecule
-jsonschema-rs
+jsonschema-rs>=0.24
