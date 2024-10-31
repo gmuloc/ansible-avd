@@ -396,7 +396,6 @@ class ActionModule(ActionBase):
 
         _get_running_collection_version(running_collection_name, info["ansible"])
 
-        # check if running from source
         check_running_from_source()
 
         display.display(f"AVD version {info['ansible']['collection']['version']}", color=C.COLOR_OK)
