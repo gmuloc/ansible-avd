@@ -14,6 +14,9 @@ def init_pyavd_logging() -> None:
     """Specify logger parameters for pyavd."""
     pyavd_logger = logging.getLogger("pyavd")
     schema_tools_logger = logging.getLogger("schema_tools")
+    # Avoid duplicate logs
+    pyavd_logger.propagate = False
+    schema_tools_logger.propagate = False
 
     pyavd_handler = PythonToAnsibleHandler(None)
     pyavd_formatter = logging.Formatter("[pyavd] - %(message)s")
@@ -23,7 +26,7 @@ def init_pyavd_logging() -> None:
     schema_tools_logger.addHandler(pyavd_handler)
 
     verbosity = Display().verbosity
-    if verbosity > 3:
+    if verbosity >= 3:
         pyavd_logger.setLevel(logging.DEBUG)
         schema_tools_logger.setLevel(logging.DEBUG)
     elif verbosity > 0:

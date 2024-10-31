@@ -12,7 +12,7 @@ path.insert(0, str(Path(__file__).parents[1]))
 from schema_tools.build_schemas import build_schemas
 
 if __name__ == "__main__":
-    log_level_str = argv[1].upper() if len(argv) > 1 else "INFO"
+    log_level_str = argv[1].upper() if len(argv) > 1 else "DEBUG"
     log_level = logging.getLevelName(log_level_str)
     logging.basicConfig(level=log_level, format="[build_schemas] - %(message)s")
     build_schemas()

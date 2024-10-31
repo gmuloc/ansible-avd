@@ -25,6 +25,6 @@ def main(log_level: int = logging.INFO) -> None:
 
 
 if __name__ == "__main__":
-    log_level_str = argv[1].upper() if len(argv) > 1 else "INFO"
+    log_level_str = argv[1].upper() if len(argv) > 1 else "DEBUG"
     log_level = logging.getLevelName(log_level_str)
     main(log_level)

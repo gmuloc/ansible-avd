@@ -25,20 +25,22 @@ def _filehash(path: Path) -> str:
     return sha.hexdigest()
 
 
-def check_hash(path: Path) -> tuple[bool, str]:
+def changed_hash(path: Path) -> tuple[bool, str]:
     """
-    Check a .hash file at the given path.
+    Check if the hash of the given path is different from the .hash file stored.
+
+    If no .hash file is found, recompute
 
     Returns (True, new_hash) if the hash has changed.
     Returns (False, current_hash) if the hash has not changed.
     """
-    current_hash = hash_dir(path)
     saved_hash_path = path / ".hash"
     if saved_hash_path.exists():
         with saved_hash_path.open() as fd:
             saved_hash = fd.read()
     else:
         saved_hash = ""
+    current_hash = hash_dir(path)
     return (True, current_hash) if saved_hash != current_hash else (False, current_hash)
 
 
