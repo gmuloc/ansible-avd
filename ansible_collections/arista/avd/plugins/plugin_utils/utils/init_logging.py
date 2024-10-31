@@ -13,7 +13,7 @@ from .python_to_ansible_logging_handler import PythonToAnsibleHandler
 def init_pyavd_logging() -> None:
     """
     Specify logger parameters for pyavd and schematools.
-    
+
     The verbosity depends on the verbosity level passed to Ansible
     - Ansible verbosity 0 translate to a level of warning
     - Ansible verbosity 1 to 2 (-v to -vv) translates to a level of info
