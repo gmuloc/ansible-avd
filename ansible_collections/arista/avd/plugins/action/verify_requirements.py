@@ -126,11 +126,8 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
             potential_dists = Distribution.discover(name=req.name)
             detected_versions = [dist.version for dist in potential_dists]
             valid_versions = [version for version in detected_versions if req.specifier.contains(version)]
-            if len(detected_versions) > 1:
-                display.v(
-                    f"Found {req.name} {detected_versions} metadata - this could mean legacy dist-info files are present in your site-packages folder"
-                    f"{' or that you are running pyavd from source.' if pyavd_from_source else ''}"
-                )
+            if len(detected_versions) > 1 and not pyavd_from_source:
+                display.v(f"Found {req.name} {detected_versions} metadata - this could mean legacy dist-info files are present in your site-packages folder.")
         except PackageNotFoundError:
             requirements_dict["not_found"][req.name] = {
                 "installed": None,
