@@ -358,13 +358,18 @@ def check_running_from_source() -> bool:
         return False
 
     # if running from source, path to pyavd and schema_tools has already been prepended to Python Path
-    from schema_tools.check_schemas import check_schemas
-    from schema_tools.compile_templates import check_templates
+    from schema_tools.check_schemas import check_schemas, rebuild_schemas
+    from schema_tools.compile_templates import check_templates, recompile_templates
 
     if schemas_recompiled := check_schemas():
-        display.display("Schemas have changed and were recompiled", color=C.COLOR_CHANGED)
+        display.display("Schemas have changed, rebuilding...", color=C.COLOR_CHANGED)
+        rebuild_schemas()
+        display.display("Done.", color=C.COLOR_CHANGED)
+
     if templates_recompiled := check_templates():
-        display.display("Templates have changed and were recompiled", color=C.COLOR_CHANGED)
+        display.display("Templates have changed, recompiling...", color=C.COLOR_CHANGED)
+        recompile_templates()
+        display.display("Done.", color=C.COLOR_CHANGED)
 
     return schemas_recompiled or templates_recompiled
 

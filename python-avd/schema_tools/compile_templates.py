@@ -14,7 +14,7 @@ from pyavd.constants import (
 )
 from pyavd.templater import Templar
 
-from .hash_dir import changed_hash
+from .hash_dir import changed_hash, hash_dir
 
 LOGGER = logging.getLogger(__name__)
 
@@ -48,13 +48,18 @@ def check_eos_designs_templates() -> bool:
     LOGGER.info("pyavd running from source detected, checking eos_designs templates for any changes...")
     dir_path = EOS_DESIGNS_JINJA2_TEMPLATE_PATH
 
-    changed, new_hash = changed_hash(dir_path)
-    if changed:
-        LOGGER.info("Recompiling eos_designs templates...")
-        compile_eos_designs_templates()
-        with (dir_path / ".hash").open("w") as fd:
-            fd.write(new_hash)
+    changed, _ = changed_hash(dir_path)
     return changed
+
+
+def recompile_eos_designs_templates() -> None:
+    """Recompile eos_designs templates."""
+    LOGGER.info("Recompiling eos_designs templates...")
+    dir_path = EOS_DESIGNS_JINJA2_TEMPLATE_PATH
+    compile_eos_designs_templates()
+    new_hash = hash_dir(dir_path)
+    with (dir_path / ".hash").open("w") as fd:
+        fd.write(new_hash)
 
 
 def check_eos_cli_config_gen_templates() -> bool:
@@ -73,12 +78,17 @@ def check_eos_cli_config_gen_templates() -> bool:
     dir_path = EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH
 
     changed, new_hash = changed_hash(dir_path)
-    if changed:
-        LOGGER.info("Recompiling eos_cli_config_gen templates...")
-        compile_eos_cli_config_gen_templates()
-        with (dir_path / ".hash").open("w") as fd:
-            fd.write(new_hash)
     return changed
+
+
+def recompile_eos_cli_config_gen_templates() -> None:
+    """Recompile eos_cli_config_gen templates."""
+    LOGGER.info("Recompiling eos_cli_config_gen templates...")
+    dir_path = EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH
+    compile_eos_cli_config_gen_templates()
+    new_hash = hash_dir(dir_path)
+    with (dir_path / ".hash").open("w") as fd:
+        fd.write(new_hash)
 
 
 def check_templates() -> bool:
@@ -93,3 +103,9 @@ def check_templates() -> bool:
     eos_cli_config_gen_changed = check_eos_cli_config_gen_templates()
     eos_designs_changed = check_eos_designs_templates()
     return eos_designs_changed or eos_cli_config_gen_changed
+
+
+def recompile_templates() -> None:
+    """Recompile eos_cli_config_gen and eos_designs templates."""
+    recompile_eos_cli_config_gen_templates()
+    recompile_eos_designs_templates()
