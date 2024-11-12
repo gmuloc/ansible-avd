@@ -15,14 +15,19 @@ from .constants import (
 LOGGER = logging.getLogger(__name__)
 
 
-def check_schemas() -> None:
+def check_schemas() -> bool:
     """
     Verify if eos_designs or eos_cli_config_gen schema need to be recompiled when running from source.
 
     Always recompiling both
+
+    Returns:
+    --------
+    bool:
+        True if any schema changed, False otherwise
     """
     if not RUNNING_FROM_SRC:
-        return
+        return False
 
     LOGGER.info("pyavd running from source detected, checking schemas for any changes...")
 
@@ -36,3 +41,5 @@ def check_schemas() -> None:
             fd.write(eos_designs_new_hash)
         with (EOS_CLI_CONFIG_GEN_FRAGMENTS_PATH / ".hash").open("w") as fd:
             fd.write(eos_cli_config_gen_new_hash)
+        return True
+    return False
