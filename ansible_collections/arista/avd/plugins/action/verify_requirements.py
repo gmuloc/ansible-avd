@@ -113,9 +113,9 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
             raise AnsibleActionFail(msg) from exc
 
         if req.extras:
-            import importlib_metadata
+            from importlib import metadata
 
-            for subreq_name in importlib_metadata.metadata(req.name).get_all("Requires-Dist"):
+            for subreq_name in metadata.metadata(req.name).get_all("Requires-Dist"):
                 subreq = Requirement(subreq_name)
                 if subreq.marker:
                     requirements.extend(subreq_name for marker in subreq.marker._markers if str(marker[0]) == "extra" and str(marker[2]) in req.extras)
