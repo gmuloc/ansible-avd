@@ -19,8 +19,6 @@ def check_schemas() -> bool:
     """
     Verify if eos_designs or eos_cli_config_gen schema need to be recompiled when running from source.
 
-    Always recompiling both
-
     Returns:
     --------
     bool:
@@ -31,11 +29,7 @@ def check_schemas() -> bool:
 
     LOGGER.info("pyavd running from source detected, checking schemas for any changes...")
 
-    # eos_designs
-    eos_designs_changed, _ = changed_hash(EOS_DESIGNS_FRAGMENTS_PATH)
-    eos_cli_config_gen_changed, _ = changed_hash(EOS_CLI_CONFIG_GEN_FRAGMENTS_PATH)
-
-    return eos_designs_changed or eos_cli_config_gen_changed
+    return changed_hash(EOS_DESIGNS_FRAGMENTS_PATH) or changed_hash(EOS_CLI_CONFIG_GEN_FRAGMENTS_PATH)
 
 
 def rebuild_schemas() -> None:

@@ -48,8 +48,7 @@ def check_eos_designs_templates() -> bool:
     LOGGER.info("pyavd running from source detected, checking eos_designs templates for any changes...")
     dir_path = EOS_DESIGNS_JINJA2_TEMPLATE_PATH
 
-    changed, _ = changed_hash(dir_path)
-    return changed
+    return changed_hash(dir_path)
 
 
 def recompile_eos_designs_templates() -> None:
@@ -77,8 +76,7 @@ def check_eos_cli_config_gen_templates() -> bool:
     LOGGER.info("pyavd running from source detected, checking eos_cli_config_gen templates for any changes...")
     dir_path = EOS_CLI_CONFIG_GEN_JINJA2_TEMPLATE_PATH
 
-    changed, new_hash = changed_hash(dir_path)
-    return changed
+    return changed_hash(dir_path)
 
 
 def recompile_eos_cli_config_gen_templates() -> None:
