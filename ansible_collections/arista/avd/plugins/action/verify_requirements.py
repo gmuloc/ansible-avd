@@ -112,6 +112,13 @@ def _validate_python_requirements(requirements: list, info: dict) -> bool:
             msg = f"Wrong format for requirement {raw_req}"
             raise AnsibleActionFail(msg) from exc
 
+        if req.extras:
+            import importlib_metadata
+
+            for subreq_name in importlib_metadata.metadata(req.name).get_all("Requires-Dist"):
+                subreq = Requirement(subreq_name)
+                if subreq.marker:
+                    requirements.extend(subreq_name for marker in subreq.marker._markers if str(marker[0]) == "extra" and str(marker[2]) in req.extras)
         if RUNNING_FROM_SOURCE and req.name == "pyavd":
             display.vvv("AVD is running from source, *not* checking pyavd version.", "Verify Requirements")
             requirements_dict["valid"][req.name] = {
