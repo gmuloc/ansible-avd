@@ -188,7 +188,10 @@ nav:
       - Development Tooling: docs/contribution/development-tooling.md
       - Code Style: docs/contribution/style-guide.md
       - Validation of Input Variables: docs/contribution/input-variable-validation.md
-      - EOS Designs internal notes: docs/contribution/eos_designs_internal_notes.md
+      - EOS Designs documentation:
+          - Overview: docs/contribution/eos_designs/overview.md
+          - AVD Classes: docs/contribution/eos_designs/avd_classes.md
+          - EOS Designs internal notes (legacy): docs/contribution/eos_designs/legacy_internal_notes.md
   - External Resources:
       - Ansible Collection User Guide: https://docs.ansible.com/ansible/latest/user_guide/collections_using.html
       - Ansible User Guide: https://docs.ansible.com/ansible/latest/user_guide/index.html
