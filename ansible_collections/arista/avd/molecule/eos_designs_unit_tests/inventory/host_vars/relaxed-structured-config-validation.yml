@@ -1,0 +1,24 @@
+---
+custom_structured_configuration_prefix: [ first_, second_ ]
+
+# type is `required` in schema - overwriting only the group in second_ should raise
+first_aaa_accounting:
+  exec:
+    type: start-stop
+    group: first_group
+
+second_aaa_accounting:
+  exec:
+    group: second_group
+
+default_node_types:
+  - node_type: spine
+    match_hostnames:
+      - relaxed.*
+
+spine:
+  nodes:
+    - name: relaxed-structured-config-validation
+      loopback_ipv4_pool: 10.42.0.0/24
+      bgp_as: 65042
+      id: 1
