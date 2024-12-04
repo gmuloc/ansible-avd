@@ -1,24 +1,20 @@
 ---
-custom_structured_configuration_prefix: [ first_, second_ ]
-
-# type is `required` in schema - overwriting only the group in second_ should raise
-first_aaa_accounting:
+# type added via strutcured_config
+custom_structured_configuration_aaa_accounting:
   exec:
-    type: start-stop
-    group: first_group
-
-second_aaa_accounting:
-  exec:
-    group: second_group
+    console:
+      type: start-stop
 
 default_node_types:
-  - node_type: spine
+  - node_type: l2leaf
     match_hostnames:
       - relaxed.*
 
-spine:
+l2leaf:
   nodes:
     - name: relaxed-structured-config-validation
-      loopback_ipv4_pool: 10.42.0.0/24
-      bgp_as: 65042
-      id: 1
+      structured_config:
+        aaa_accounting:
+          exec:
+            console:
+              group: node_group
