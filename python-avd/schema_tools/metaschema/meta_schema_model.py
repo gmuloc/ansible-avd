@@ -517,9 +517,7 @@ class AvdSchemaDict(AvdSchemaBaseModel):
     Note that this is building the schema from values in the _data_ being validated!
     """
     relaxed_validation: bool | None = False
-    """
-    Disable validation of `required` keys for any children.
-    """
+    """Disable validation of `required` keys for any children."""
     allow_other_keys: bool | None = False
     """Allow keys in the dictionary which are not defined in the schema."""
     documentation_options: DocumentationOptions | None = None

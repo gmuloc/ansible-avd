@@ -118,14 +118,17 @@ class AvdValidator:
             all_keys = keys
 
         # Validation of "allow_other_keys"
-        if not schema.get("allow_other_keys", False) and (
-            invalid_keys := ", ".join([key for key in instance if key not in all_keys and not key.startswith("_")])
-        ):
-            yield AvdValidationError(f"Unexpected key(s) '{invalid_keys}' found in dict.", path=path)
+        if not schema.get("allow_other_keys", False):
+            # Check that instance only contains the schema keys
+
+            invalid_keys = ", ".join([key for key in instance if key not in all_keys and not key.startswith("_")])
+            if invalid_keys:
+                yield AvdValidationError(f"Unexpected key(s) '{invalid_keys}' found in dict.", path=path)
 
         old_relaxed_validation = self._relaxed_validation
         if (relaxed_validation := schema.get("relaxed_validation")) is not None:
             self._relaxed_validation = relaxed_validation
+
         # Run over child keys and check for required and update child schema with dynamic valid values before
         # descending into validation of child schema.
         for key, childschema in all_keys.items():

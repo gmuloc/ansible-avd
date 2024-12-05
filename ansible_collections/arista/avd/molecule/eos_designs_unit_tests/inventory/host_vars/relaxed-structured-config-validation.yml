@@ -1,5 +1,5 @@
 ---
-# type added via strutcured_config
+# The required key 'type' is added via custom_structured_configuration.
 custom_structured_configuration_aaa_accounting:
   exec:
     console:
@@ -17,4 +17,5 @@ l2leaf:
         aaa_accounting:
           exec:
             console:
+              # Adding group here but not inluding the required key 'type'. This will not raise a validation error because of relax mode in the schema.
               group: node_group
