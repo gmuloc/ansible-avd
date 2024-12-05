@@ -263,9 +263,9 @@ class VlansMixin:
                         # Not matching tenant filters. Skipping this tenant.
                         continue
 
-                    vrfs = tenant.get("vrfs", [])
+                    vrfs = tenant.get("vrfs") or []
                     for vrf in vrfs:
-                        svis = vrf.get("svis", [])
+                        svis = vrf.get("svis") or []
                         for svi in svis:
                             svi_tags = svi.get("tags", ["all"])
                             if "all" in match_tags or set(svi_tags).intersection(match_tags):
@@ -286,7 +286,7 @@ class VlansMixin:
                                     continue
                                 vlans.append(int(svi["id"]))
 
-                    l2vlans = tenant.get("l2vlans", [])
+                    l2vlans = tenant.get("l2vlans") or []
                     for l2vlan in l2vlans:
                         l2vlan_tags = l2vlan.get("tags", ["all"])
                         if "all" in match_tags or set(l2vlan_tags).intersection(match_tags):

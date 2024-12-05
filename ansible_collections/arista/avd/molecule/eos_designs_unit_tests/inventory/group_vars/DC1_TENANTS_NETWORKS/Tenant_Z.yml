@@ -1,0 +1,11 @@
+---
+tenant_z:
+  # Testing empty VRFs and L2VLANS
+  - name: Tenant_ZZZZ
+    vrfs: null
+    l2vlans: null
+  # Testing empty SVIs
+  - name: Tenant_ZZZ
+    vrfs:
+      - name: test
+        svis: null
