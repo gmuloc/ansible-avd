@@ -5,10 +5,7 @@ custom_structured_configuration_aaa_accounting:
     console:
       type: start-stop
 
-default_node_types:
-  - node_type: l2leaf
-    match_hostnames:
-      - relaxed.*
+type: l2leaf
 
 l2leaf:
   nodes:
