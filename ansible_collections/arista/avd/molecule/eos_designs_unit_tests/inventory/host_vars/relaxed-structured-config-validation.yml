@@ -17,5 +17,6 @@ l2leaf:
         aaa_accounting:
           exec:
             console:
-              # Adding group here but not inluding the required key 'type'. This will not raise a validation error because of relax mode in the schema.
+              # Adding group here but not including the required key 'type'.
+              # This will not raise a validation error because of relax mode in the schema.
               group: node_group
