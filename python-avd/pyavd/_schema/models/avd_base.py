@@ -18,6 +18,13 @@ if TYPE_CHECKING:
 class AvdBase(ABC):
     """Base class used for schema-based data classes holding data loaded from AVD inputs."""
 
+    path: AvdPath | None
+    """Path the class in the data tree."""
+
+    def path(self) -> str | None:
+        """Return the path of the class."""
+        return self.path
+
     def __eq__(self, other: object) -> bool:
         """Compare two instances of AvdBase by comparing their repr."""
         if isinstance(other, self.__class__):
