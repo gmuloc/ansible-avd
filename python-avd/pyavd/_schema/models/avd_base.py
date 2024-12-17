@@ -21,6 +21,22 @@ class AvdBase(ABC):
     path: AvdPath | None
     """Path the class in the data tree."""
 
+    _created_from_null: bool = False
+    """
+    Flag to say if this data was loaded from a '<key>: null' value in YAML.
+
+    This is used to handle inheritance and merging correctly.
+    When _created_from_null we inherit nothing (we win!).
+    When _created_from_null we take anything in when merging and clear the flag.
+    TODO: Stop changing data in-place.
+
+    The flag is not carried across between classes, so it should not affect anything outside the loaded inputs.
+    Only exception is on _cast_as, where the flag is carried over.
+    """
+
+    _block_inheritance: bool = False
+    """Flag to block inheriting further if we at some point inherited from a class with _created_from_null set."""
+
     def path(self) -> str | None:
         """Return the path of the class."""
         return self.path
@@ -40,8 +56,19 @@ class AvdBase(ABC):
     def _load(cls, data: Sequence | Mapping) -> Self:
         """Returns a new instance loaded with the given data."""
 
+    @classmethod
+    def _from_null(cls) -> Self:
+        """Returns a new instance with all attributes set to None. This represents the YAML input '<key>: null'."""
+        new_instance = cls()
+        new_instance._created_from_null = True
+        return new_instance
+
     @abstractmethod
-    def _dump(self, include_default_values: bool = False, strip_values: tuple = (None, [], {})) -> dict | list:
+    def _strip_empties(self) -> None:
+        """In-place update the instance to remove data matching the given strip_values."""
+
+    @abstractmethod
+    def _dump(self, include_default_values: bool = False) -> dict | list:
         """Dump data into native Python types with or without default values."""
 
     @abstractmethod

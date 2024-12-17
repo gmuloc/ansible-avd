@@ -66,21 +66,7 @@ class AvdPath:
         return AvdPath(schema=self.schema)
 
     def create_descendant(self, *args: int | str | PathIndexedListKey) -> AvdPath:
-        """Creates a descendant of this AvdPath instace."""
+        """Creates a descendant of this AvdPath instance."""
         new_path_elements = self.path_elements.copy()
         new_path_elements.extend(args)
         return AvdPath(*new_path_elements)
-
-
-if __name__ == "__main__":
-    paths = [
-        AvdPath(),
-        AvdPath("ethernet_interfaces", PathIndexedListKey(0, "Ethernet1", "name")),
-        AvdPath("ethernet_interfaces", PathIndexedListKey(0, "Ethernet1", "name"), "speed"),
-        AvdPath("ethernet_interfaces", "stuff", "blah", "46"),
-        AvdPath("ethernet_interfaces", "stuff", "blah", 42, "46"),
-    ]
-    for p in paths:
-        print(p)
-        print(p.parent)
-        print(p.create_descendant("bloh", 666, PathIndexedListKey(12, "a", "b"), "test"))
