@@ -38,6 +38,7 @@ class UtilsMixin:
             for connected_endpoint in connected_endpoints_key.value:
                 filtered_adapters = []
                 for adapter_index, adapter in enumerate(connected_endpoint.adapters):
+                    raise Exception(adapter.path)
                     adapter._context = f"{connected_endpoints_key.key}[name={connected_endpoint.name}].adapters[{adapter_index}]"
                     adapter_settings = self.shared_utils.get_merged_adapter_settings(adapter)
                     if not adapter_settings.switches or self.shared_utils.hostname not in adapter_settings.switches:

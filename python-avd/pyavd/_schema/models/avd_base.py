@@ -5,7 +5,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
+import re
 from typing import TYPE_CHECKING, Literal
+
+from .avd_path import AvdPath
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -18,7 +21,7 @@ if TYPE_CHECKING:
 class AvdBase(ABC):
     """Base class used for schema-based data classes holding data loaded from AVD inputs."""
 
-    path: AvdPath | None
+    _path: AvdPath = AvdPath()
     """Path the class in the data tree."""
 
     _created_from_null: bool = False
@@ -37,9 +40,15 @@ class AvdBase(ABC):
     _block_inheritance: bool = False
     """Flag to block inheriting further if we at some point inherited from a class with _created_from_null set."""
 
-    def path(self) -> str | None:
+    @property
+    def path(self) -> str:
         """Return the path of the class."""
-        return self.path
+        return str(self._path)
+
+    @classmethod
+    def get_schema_name(cls) -> str:
+        """Return the schema name of the class."""
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
 
     def __eq__(self, other: object) -> bool:
         """Compare two instances of AvdBase by comparing their repr."""

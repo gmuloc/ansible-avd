@@ -12,6 +12,7 @@ from pyavd._schema.coerce_type import coerce_type
 from pyavd._utils import Undefined, UndefinedType, merge
 
 from .avd_base import AvdBase
+from .avd_path import AvdPath
 from .avd_indexed_list import AvdIndexedList
 
 if TYPE_CHECKING:
@@ -38,12 +39,12 @@ class AvdModel(AvdBase):
     """Map of dict key to field name. Used when the key is names with a reserved keyword or mixed case. E.g. `Vxlan1` or `as`."""
 
     @classmethod
-    def _load(cls, data: Mapping) -> Self:
+    def _load(cls, data: Mapping[Any, Any]) -> Self:
         """Returns a new instance loaded with the data from the given dict."""
         return cls._from_dict(data)
 
     @classmethod
-    def _from_dict(cls: type[T_AvdModel], data: Mapping, keep_extra_keys: bool = False) -> T_AvdModel:
+    def _from_dict(cls: type[T_AvdModel], data: Mapping, parent_path: AvdPath = AvdPath(), *, keep_extra_keys: bool = False) -> T_AvdModel:
         """
         Returns a new instance loaded with the data from the given dict.
 
@@ -71,7 +72,9 @@ class AvdModel(AvdBase):
 
             cls_args[field] = coerce_type(data[key], cls._fields[field]["type"])
 
-        return cls(**cls_args)
+        instance = cls(**cls_args)
+        instance._path = parent_path
+        return instance
 
     @classmethod
     def _get_field_name(cls, key: str) -> str | None:
@@ -113,7 +116,13 @@ class AvdModel(AvdBase):
 
         This method is typically overridden when TYPE_HINTING is True, to provider proper suggestions and type hints for the arguments.
         """
-        [setattr(self, arg, arg_value) for arg, arg_value in kwargs.items() if arg_value is not Undefined]
+        # TODO: check performance impact
+        for arg, arg_value in kwargs.items():
+            if arg_value is Undefined:
+                continue
+            if isinstance(arg_value, AvdBase):
+                arg_value._path = self._path.create_descendant(arg)
+            setattr(self, arg, arg_value)
 
     def __getattr__(self, name: str) -> Any:
         """

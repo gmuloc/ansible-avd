@@ -12,6 +12,7 @@ from pyavd._utils import Undefined, UndefinedType
 
 from .avd_base import AvdBase
 from .avd_model import AvdModel
+from .avd_path import AvdPath
 from .type_vars import T, T_AvdList, T_ItemType
 
 if TYPE_CHECKING:
@@ -41,7 +42,7 @@ class AvdList(Sequence[T_ItemType], Generic[T_ItemType], AvdBase):
         return cls._from_list(data)
 
     @classmethod
-    def _from_list(cls, data: Sequence) -> Self:
+    def _from_list(cls, data: Sequence, parent_path: AvdPath = AvdPath()) -> Self:
         """Returns a new instance loaded with the data from the given list."""
         if not isinstance(data, Sequence):
             msg = f"Expecting 'data' as a 'Sequence' when loading data into '{cls.__name__}'. Got '{type(data)}"
@@ -52,7 +53,10 @@ class AvdList(Sequence[T_ItemType], Generic[T_ItemType], AvdBase):
             return cls(data)
 
         cls_items = [coerce_type(item, item_type) for item in data]
-        return cls(cls_items)
+
+        instance = cls(cls_items)
+        instance._path = parent_path.create_descendant(cls.get_schema_name)
+        return instance
 
     def __init__(self, items: Iterable[T_ItemType] | UndefinedType = Undefined) -> None:
         """
@@ -65,6 +69,11 @@ class AvdList(Sequence[T_ItemType], Generic[T_ItemType], AvdBase):
             self._items = []
         else:
             self._items = list(items)
+            if self.__class__.__name__:
+                print(self.__class__.__name__)
+            if isinstance(self._item_type, AvdBase):
+                for index, item in enumerate(self._items):
+                    item._path = self._path.create_descendant(index)
 
     def __repr__(self) -> str:
         """Returns a repr with all the items including any nested models."""
