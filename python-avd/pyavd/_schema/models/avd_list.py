@@ -12,7 +12,7 @@ from pyavd._utils import Undefined, UndefinedType
 
 from .avd_base import AvdBase
 from .avd_model import AvdModel
-from .avd_path import AvdPath
+from .input_path import InputPath
 from .type_vars import T, T_AvdList, T_ItemType
 
 if TYPE_CHECKING:
@@ -37,26 +37,28 @@ class AvdList(Sequence[T_ItemType], Generic[T_ItemType], AvdBase):
     """
 
     @classmethod
-    def _load(cls, data: Sequence) -> Self:
+    def _load(cls, data: Sequence, data_source: InputPath | None = None) -> Self:
         """Returns a new instance loaded with the data from the given list."""
-        return cls._from_list(data)
+        return cls._from_list(data, data_source=data_source)
 
     @classmethod
-    def _from_list(cls, data: Sequence, parent_path: AvdPath = AvdPath()) -> Self:
+    def _from_list(cls, data: Sequence, data_source: InputPath | None = None) -> Self:
         """Returns a new instance loaded with the data from the given list."""
         if not isinstance(data, Sequence):
             msg = f"Expecting 'data' as a 'Sequence' when loading data into '{cls.__name__}'. Got '{type(data)}"
             raise TypeError(msg)
 
+        data_source = data_source or InputPath()
+
         item_type = cls._item_type
         if item_type is Any:
             return cls(data)
 
-        cls_items = [coerce_type(item, item_type) for item in data]
+        cls_items: Iterable[T_ItemType] = [coerce_type(item, item_type, data_source=data_source.create_descendant(index)) for index, item in enumerate(data)]
 
-        instance = cls(cls_items)
-        instance._path = parent_path.create_descendant(cls.get_schema_name)
-        return instance
+        cls_instance = cls(cls_items)
+        cls_instance._source = data_source
+        return cls_instance
 
     def __init__(self, items: Iterable[T_ItemType] | UndefinedType = Undefined) -> None:
         """
@@ -69,11 +71,6 @@ class AvdList(Sequence[T_ItemType], Generic[T_ItemType], AvdBase):
             self._items = []
         else:
             self._items = list(items)
-            if self.__class__.__name__:
-                print(self.__class__.__name__)
-            if isinstance(self._item_type, AvdBase):
-                for index, item in enumerate(self._items):
-                    item._path = self._path.create_descendant(index)
 
     def __repr__(self) -> str:
         """Returns a repr with all the items including any nested models."""
@@ -222,5 +219,7 @@ class AvdList(Sequence[T_ItemType], Generic[T_ItemType], AvdBase):
 
         # Pass along the _created_from_null flag
         new_instance._created_from_null = self._created_from_null
+        # Copy the source
+        new_instance._source = self._source
 
         return new_instance

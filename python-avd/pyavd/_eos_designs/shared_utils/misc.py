@@ -194,12 +194,11 @@ class MiscMixin:
                 continue
 
             err_context = f"ipv4_acls[name={name}].entries[{index}]"
+            # TODO: change this to use field path stored in class
             if not entry.source:
-                msg = f"{err_context}.source"
-                raise AristaAvdMissingVariableError(msg)
+                raise AristaAvdMissingVariableError(entry._source.create_descendant("source"))
             if not entry.destination:
-                msg = f"{err_context}.destination"
-                raise AristaAvdMissingVariableError(msg)
+                raise AristaAvdMissingVariableError(entry._source.create_descendant("destination"))
 
             entry.source = self._get_ipv4_acl_field_with_substitution(entry.source, ip_replacements, f"{err_context}.source", interface_name)
             entry.destination = self._get_ipv4_acl_field_with_substitution(entry.destination, ip_replacements, f"{err_context}.destination", interface_name)

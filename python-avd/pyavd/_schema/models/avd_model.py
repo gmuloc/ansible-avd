@@ -12,8 +12,8 @@ from pyavd._schema.coerce_type import coerce_type
 from pyavd._utils import Undefined, UndefinedType, merge
 
 from .avd_base import AvdBase
-from .avd_path import AvdPath
 from .avd_indexed_list import AvdIndexedList
+from .input_path import InputPath
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -39,12 +39,12 @@ class AvdModel(AvdBase):
     """Map of dict key to field name. Used when the key is names with a reserved keyword or mixed case. E.g. `Vxlan1` or `as`."""
 
     @classmethod
-    def _load(cls, data: Mapping[Any, Any]) -> Self:
+    def _load(cls, data: Mapping[Any, Any], data_source: InputPath | None = None) -> Self:
         """Returns a new instance loaded with the data from the given dict."""
-        return cls._from_dict(data)
+        return cls._from_dict(data, data_source=data_source)
 
     @classmethod
-    def _from_dict(cls: type[T_AvdModel], data: Mapping, parent_path: AvdPath = AvdPath(), *, keep_extra_keys: bool = False) -> T_AvdModel:
+    def _from_dict(cls: type[T_AvdModel], data: Mapping, data_source: InputPath | None = None, *, keep_extra_keys: bool = False) -> T_AvdModel:
         """
         Returns a new instance loaded with the data from the given dict.
 
@@ -56,6 +56,8 @@ class AvdModel(AvdBase):
 
         has_custom_data = "_custom_data" in cls._fields
         cls_args = {}
+
+        data_source = data_source or InputPath()
 
         for key in data:
             if not (field := cls._get_field_name(key)):
@@ -70,11 +72,14 @@ class AvdModel(AvdBase):
                 msg = f"Invalid key '{key}'. Not available on '{cls.__name__}'."
                 raise KeyError(msg)
 
-            cls_args[field] = coerce_type(data[key], cls._fields[field]["type"])
+            # Handle Dynamic Keys slightly differently
+            child_data_source = data_source if cls.__name__.startswith("Dynamic") and key == "value" else data_source.create_descendant(key)
 
-        instance = cls(**cls_args)
-        instance._path = parent_path
-        return instance
+            cls_args[field] = coerce_type(data[key], cls._fields[field]["type"], data_source=child_data_source)
+
+        cls_instance = cls(**cls_args)
+        cls_instance._source = data_source
+        return cls_instance
 
     @classmethod
     def _get_field_name(cls, key: str) -> str | None:
@@ -116,13 +121,7 @@ class AvdModel(AvdBase):
 
         This method is typically overridden when TYPE_HINTING is True, to provider proper suggestions and type hints for the arguments.
         """
-        # TODO: check performance impact
-        for arg, arg_value in kwargs.items():
-            if arg_value is Undefined:
-                continue
-            if isinstance(arg_value, AvdBase):
-                arg_value._path = self._path.create_descendant(arg)
-            setattr(self, arg, arg_value)
+        [setattr(self, arg, arg_value) for arg, arg_value in kwargs.items() if arg_value is not Undefined]
 
     def __getattr__(self, name: str) -> Any:
         """
@@ -422,6 +421,8 @@ class AvdModel(AvdBase):
         # Pass along the internal flags
         new_instance._created_from_null = self._created_from_null
         new_instance._block_inheritance = self._block_inheritance
+        # Copy the source
+        new_instance._source = self._source
 
         return new_instance
 

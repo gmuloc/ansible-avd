@@ -5,10 +5,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
-import re
 from typing import TYPE_CHECKING, Literal
 
-from .avd_path import AvdPath
+from .input_path import InputPath
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -21,8 +20,11 @@ if TYPE_CHECKING:
 class AvdBase(ABC):
     """Base class used for schema-based data classes holding data loaded from AVD inputs."""
 
-    _path: AvdPath = AvdPath()
-    """Path the class in the data tree."""
+    _source: InputPath = InputPath()
+    """Source of the class.
+
+    For now only InputPath (path in the input data) is supported.
+    """
 
     _created_from_null: bool = False
     """
@@ -40,16 +42,6 @@ class AvdBase(ABC):
     _block_inheritance: bool = False
     """Flag to block inheriting further if we at some point inherited from a class with _created_from_null set."""
 
-    @property
-    def path(self) -> str:
-        """Return the path of the class."""
-        return str(self._path)
-
-    @classmethod
-    def get_schema_name(cls) -> str:
-        """Return the schema name of the class."""
-        return re.sub(r"(?<!^)(?=[A-Z])", "_", cls.__name__).lower()
-
     def __eq__(self, other: object) -> bool:
         """Compare two instances of AvdBase by comparing their repr."""
         if isinstance(other, self.__class__):
@@ -66,10 +58,11 @@ class AvdBase(ABC):
         """Returns a new instance loaded with the given data."""
 
     @classmethod
-    def _from_null(cls) -> Self:
+    def _from_null(cls, data_source: InputPath | None = None) -> Self:
         """Returns a new instance with all attributes set to None. This represents the YAML input '<key>: null'."""
         new_instance = cls()
         new_instance._created_from_null = True
+        new_instance._source = data_source or InputPath()
         return new_instance
 
     @abstractmethod

@@ -12,7 +12,7 @@ from pyavd._schema.coerce_type import coerce_type
 from pyavd._utils import Undefined, UndefinedType
 
 from .avd_base import AvdBase
-from .avd_path import AvdPath, PathIndexedListKey
+from .input_path import InputPath, PathIndexedListKey
 from .type_vars import T_AvdModel, T_PrimaryKey
 
 if TYPE_CHECKING:
@@ -42,21 +42,31 @@ class AvdIndexedList(Sequence[T_AvdModel], Generic[T_PrimaryKey, T_AvdModel], Av
     """
 
     @classmethod
-    def _load(cls, data: Sequence) -> Self:
+    def _load(cls, data: Sequence, data_source: InputPath | None = None) -> Self:
         """Returns a new instance loaded with the data from the given list."""
-        return cls._from_list(data)
+        return cls._from_list(data, data_source=data_source)
 
     @classmethod
-    def _from_list(cls, data: Sequence, parent_path: AvdPath = AvdPath()) -> Self:
+    def _from_list(cls, data: Sequence, data_source: InputPath | None = None) -> Self:
         """Returns a new instance loaded with the data from the given list."""
+        data_source = data_source or InputPath()
         if not isinstance(data, Sequence):
             msg = f"Expecting 'data' as a 'Sequence' when loading data into '{cls.__name__}'. Got '{type(data)}"
             raise TypeError(msg)
 
-        cls_items = cast(Iterable[T_AvdModel], (coerce_type(item, cls._item_type) for item in data))
-        instance = cls(cls_items)
-        instance._path = parent_path.create_descendant(cls.get_schema_name())
-        return instance
+        cls_items = []
+        # Handle _DynamicKeys slightly differently
+        for index, item in enumerate(data):
+            child_data_source = (
+                InputPath(item[cls._primary_key])
+                if cls.__name__.startswith("Dynamic")
+                else data_source.create_descendant(PathIndexedListKey(index, cls._primary_key, item[cls._primary_key]))
+            )
+            cls_items.append(cast(Iterable[T_AvdModel], (coerce_type(item, cls._item_type, data_source=child_data_source))))
+
+        cls_instance = cls(cls_items)
+        cls_instance._source = data_source
+        return cls_instance
 
     def __init__(self, items: Iterable[T_AvdModel] | UndefinedType = Undefined) -> None:
         """
@@ -69,11 +79,6 @@ class AvdIndexedList(Sequence[T_AvdModel], Generic[T_PrimaryKey, T_AvdModel], Av
             self._items = {}
         else:
             self._items = {getattr(item, self._primary_key): item for item in items}
-            # print(self.__class__.__name__)
-            if self.__class__.__name__ == "Adapters":
-                raise Exception(self.path)
-            for index, primary_key in enumerate(self._items.keys()):
-                self._items[primary_key]._path = self._path.create_descendant(PathIndexedListKey(index, self._primary_key, primary_key))
 
     def __repr__(self) -> str:
         """Returns a repr with all the items including any nested models."""
@@ -255,5 +260,7 @@ class AvdIndexedList(Sequence[T_AvdModel], Generic[T_PrimaryKey, T_AvdModel], Av
         # Pass along the internal flags
         new_instance._created_from_null = self._created_from_null
         new_instance._block_inheritance = self._block_inheritance
+        # Copy the source
+        new_instance._source = self._source
 
         return new_instance

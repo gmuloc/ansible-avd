@@ -94,7 +94,7 @@ class UtilsMixin:
             # No profile to apply
             return adapter_or_network_port_settings
 
-        adapter_profile = self.get_merged_port_profile(profile_name, adapter_or_network_port_settings._context)
+        adapter_profile = self.get_merged_port_profile(profile_name, adapter_or_network_port_settings._source)
         profile_as_adapter_or_network_port_settings = adapter_profile._cast_as(type(adapter_or_network_port_settings))
         adapter_or_network_port_settings._deepinherit(profile_as_adapter_or_network_port_settings)
         return adapter_or_network_port_settings
