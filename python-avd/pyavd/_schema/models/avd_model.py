@@ -37,6 +37,8 @@ class AvdModel(AvdBase):
     """Map of field name to original dict key. Used when fields have the field_ prefix to get the original key."""
     _key_to_field_map: ClassVar[dict[str, str]] = {}
     """Map of dict key to field name. Used when the key is names with a reserved keyword or mixed case. E.g. `Vxlan1` or `as`."""
+    _field_source: ClassVar[dict[str, InputPath]] = {}
+    """Map of field name to field source."""
 
     @classmethod
     def _load(cls, data: Mapping[Any, Any], data_source: InputPath | None = None) -> Self:
@@ -76,6 +78,7 @@ class AvdModel(AvdBase):
             child_data_source = data_source if cls.__name__.startswith("Dynamic") and key == "value" else data_source.create_descendant(key)
 
             cls_args[field] = coerce_type(data[key], cls._fields[field]["type"], data_source=child_data_source)
+            cls._field_source[field] = child_data_source
 
         cls_instance = cls(**cls_args)
         cls_instance._source = data_source
@@ -86,6 +89,16 @@ class AvdModel(AvdBase):
         """Returns the field name for the given key. Returns None if the key is not matching a valid field."""
         field_name = cls._key_to_field_map.get(key, key)
         return field_name if field_name in cls._fields else None
+
+    @classmethod
+    def get_field_source(cls, key: str) -> str | None:
+        """Returns the field source for the given key. Returns None if the key is not matching a valid field."""
+        # TODO: discuss if we should include the item path in error messages so that if the field come from a profile we
+        # get both info
+        field_name = cls._key_to_field_map.get(key, key)
+        if (source := cls._field_source.get(field_name, None)) is not None:
+            return str(source)
+        return None
 
     @classmethod
     def _get_field_default_value(cls, name: str) -> Any:
