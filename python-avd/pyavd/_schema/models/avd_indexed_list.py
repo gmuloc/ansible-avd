@@ -57,10 +57,12 @@ class AvdIndexedList(Sequence[T_AvdModel], Generic[T_PrimaryKey, T_AvdModel], Av
         cls_items = []
         # Handle _DynamicKeys slightly differently
         for index, item in enumerate(data):
+            # Need to retrieve the key from the data not from the model.
+            item_key = cls._item_type._field_to_key_map.get(cls._primary_key, cls._primary_key)
             child_data_source = (
-                InputPath(item[cls._primary_key])
+                InputPath(item[item_key])
                 if cls.__name__.startswith("Dynamic")
-                else data_source.create_descendant(PathIndexedListKey(index, cls._primary_key, item[cls._primary_key]))
+                else data_source.create_descendant(PathIndexedListKey(index, item_key, item[item_key]))
             )
             cls_items.append(cast(Iterable[T_AvdModel], (coerce_type(item, cls._item_type, data_source=child_data_source))))
 
