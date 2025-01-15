@@ -493,10 +493,7 @@ class RouterBgpMixin(UtilsMixin):
             ),
         }
 
-        if self.shared_utils.overlay_routing_protocol == "ebgp":
-            if remote_as is None:
-                msg = "Configuring eBGP neighbor without a remote_as"
-                raise AristaAvdError(msg)
+        if remote_as is None:
             neighbor["remote_as"] = remote_as
 
         if self.inputs.shutdown_bgp_towards_undeployed_peers and name in self._avd_overlay_peers:
