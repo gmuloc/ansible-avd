@@ -8942,8 +8942,6 @@ class EosDesigns(EosDesignsRootModel):
         `wan_mode` root key is set to `autovpn` or `cv-pathfinder`.
         `server` indicates that the router is a
         route-reflector.
-
-        Only supported if `overlay_routing_protocol` is set to `ibgp`.
         """
         default_flow_tracker_type: Literal["sampled", "hardware"]
         """
@@ -9097,8 +9095,6 @@ class EosDesigns(EosDesignsRootModel):
                        `wan_mode` root key is set to `autovpn` or `cv-pathfinder`.
                        `server` indicates that the router is a
                        route-reflector.
-
-                       Only supported if `overlay_routing_protocol` is set to `ibgp`.
                     default_flow_tracker_type: Set the default flow tracker type.
                     mlag_support: Can this node type support mlag.
                     network_services:
@@ -9496,8 +9492,6 @@ class EosDesigns(EosDesignsRootModel):
         `wan_mode` root key is set to `autovpn` or `cv-pathfinder`.
         `server` indicates that the router is a
         route-reflector.
-
-        Only supported if `overlay_routing_protocol` is set to `ibgp`.
         """
         default_flow_tracker_type: Literal["sampled", "hardware"]
         """
@@ -9651,8 +9645,6 @@ class EosDesigns(EosDesignsRootModel):
                        `wan_mode` root key is set to `autovpn` or `cv-pathfinder`.
                        `server` indicates that the router is a
                        route-reflector.
-
-                       Only supported if `overlay_routing_protocol` is set to `ibgp`.
                     default_flow_tracker_type: Set the default flow tracker type.
                     mlag_support: Can this node type support mlag.
                     network_services:
