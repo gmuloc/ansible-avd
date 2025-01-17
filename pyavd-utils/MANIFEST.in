@@ -1,0 +1,3 @@
+include rust/Cargo.toml
+include rust/passwords/Cargo.toml
+recursive-include rust/passwords/*.rs

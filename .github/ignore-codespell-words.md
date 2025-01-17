@@ -25,3 +25,5 @@ intends to clarify why the words are ignored and if any action is pending
     Acronym Transfer of Information
 - pathc
     Used as test data
+- crate
+    Name of package for rust
