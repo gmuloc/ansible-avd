@@ -31,7 +31,7 @@ updates:
       - "aristanetworks/avd-maintainers"
     groups:
       dev-dependencies:
-        - dependency-type: "group"
+        - dependency-type: "development"
     pull-request-branch-name:
       separator: "/"
     commit-message:
