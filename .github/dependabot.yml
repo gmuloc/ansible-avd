@@ -8,20 +8,42 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
     reviewers:
       - "aristanetworks/avd-maintainers"
+    groups:
+      dev-dependencies:
+        - dependency-type: "production"
     pull-request-branch-name:
       separator: "/"
     commit-message:
       prefix: "Bump(requirements): "
     # Allow up to 10 open pull requests for pip dependencies
     open-pull-requests-limit: 10
-  # This second entry for pip covers the requirements file in the ansible collection
+  # This second entry for pip covers the dev requirements of pyavd
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    reviewers:
+      - "aristanetworks/avd-maintainers"
+    groups:
+      dev-dependencies:
+        - dependency-type: "group"
+    pull-request-branch-name:
+      separator: "/"
+    commit-message:
+      prefix: "CI(requirements): "
+    # Allow up to 10 open pull requests for pip dependencies
+    open-pull-requests-limit: 10
+  # This third entry for pip covers the requirements file in the ansible collection
   - package-ecosystem: "pip"
     directory: "/ansible_collections/arista/avd/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
     reviewers:
       - "aristanetworks/avd-maintainers"
     pull-request-branch-name:
@@ -35,6 +57,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
     reviewers:
       - "aristanetworks/avd-maintainers"
     commit-message:
