@@ -242,6 +242,10 @@ metadata:
           name: Site423
           location:
             address: Somewhere-warm
+        - id: 12
+          name: Site12
+          location:
+            address: 12 Downing Street, London
     - id: 43
       name: AVD_Land_East
       zones:
