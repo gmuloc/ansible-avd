@@ -493,7 +493,7 @@ class RouterBgpMixin(UtilsMixin):
             ),
         }
 
-        if remote_as is None:
+        if remote_as is not None:
             neighbor["remote_as"] = remote_as
 
         if self.inputs.shutdown_bgp_towards_undeployed_peers and name in self._avd_overlay_peers:
