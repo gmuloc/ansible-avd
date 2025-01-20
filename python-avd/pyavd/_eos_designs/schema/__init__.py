@@ -56429,10 +56429,12 @@ class EosDesigns(EosDesignsRootModel):
     """
     wan_use_evpn_node_settings_for_lan: bool
     """
-    Setting to start using `overlay_routing_protocol`, `evpn_role` and `vtep`
-    node settings for LAN side
-    on WAN devices (they were enforced before).
-    This will be the default starting 6.0.0.
+    PREVIEW: This key is currently not supported
+    Setting to start using `overlay_routing_protocol`,
+    `evpn_role` and `vtep`
+    node settings for LAN side on WAN devices (they were enforced before).
+    This
+    will be the default starting 6.0.0.
 
     Default value: `False`
     """
@@ -57896,10 +57898,12 @@ class EosDesigns(EosDesignsRootModel):
                    When using automatic ceritficate
                    deployment via CloudVision this name must be the same on all WAN routers.
                 wan_use_evpn_node_settings_for_lan:
-                   Setting to start using `overlay_routing_protocol`, `evpn_role` and `vtep`
-                   node settings for LAN side
-                   on WAN devices (they were enforced before).
-                   This will be the default starting 6.0.0.
+                   PREVIEW: This key is currently not supported
+                   Setting to start using `overlay_routing_protocol`,
+                   `evpn_role` and `vtep`
+                   node settings for LAN side on WAN devices (they were enforced before).
+                   This
+                   will be the default starting 6.0.0.
                 wan_virtual_topologies:
                    Configure Virtual Topologies for CV Pathfinder and AutoVPN.
                    Auto create a control plane

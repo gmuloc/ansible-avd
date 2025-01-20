@@ -4881,8 +4881,9 @@ keys:
     documentation_options:
       table: wan-settings
     default: false
-    description: 'Setting to start using `overlay_routing_protocol`, `evpn_role` and
-      `vtep`
+    description: 'PREVIEW: This key is currently not supported
+
+      Setting to start using `overlay_routing_protocol`, `evpn_role` and `vtep`
 
       node settings for LAN side on WAN devices (they were enforced before).
 
